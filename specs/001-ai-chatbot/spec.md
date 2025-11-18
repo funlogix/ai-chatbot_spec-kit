@@ -88,3 +88,13 @@ Chatbot converts its text responses to speech, allowing users to listen to respo
 - **SC-003**: Text-to-speech output is generated and played within 2 seconds of receiving the text response 90% of the time
 - **SC-004**: 90% of users can initiate a basic conversation with the chatbot within their first 2 minutes of use without external assistance
 - **SC-005**: User satisfaction rating for the ease of use is 4.0 or higher on a 5-point scale
+
+## Clarifications
+
+### Session 2025-11-17
+
+- Q: Which AI service should be used for the chatbot functionality? → A: Use Groq API for chat
+- Q: How should user conversation data be handled from a privacy perspective? → A: All conversation data is processed in real-time and not stored to ensure privacy
+- Q: How should the system behave when voice services fail? → A: System degrades gracefully to text-only mode when voice services fail
+- Q: What accessibility standards should be followed? → A: Support basic WCAG 2.1 AA compliance for web accessibility
+- Q: What are the performance requirements for voice processing? → A: Voice input/output should have sub-3 second response time for 80% of requests
