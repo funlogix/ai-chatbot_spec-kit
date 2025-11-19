@@ -43,13 +43,15 @@ description: "Task list for AI Chatbot with Text and Voice Interactions implemen
 
 - [ ] T007 [P] Create basic HTML structure with chat interface in index.html
 - [ ] T008 [P] Create basic CSS structure in main.css with responsive layout
-- [ ] T009 [P] Create Conversation class in scripts/models/conversation.js based on data model
-- [ ] T010 [P] Create Message class in scripts/models/message.js based on data model
-- [ ] T011 [P] Create UserInput class in scripts/models/user-input.js based on data model
+- [ ] T009 [P] Create Conversation class in scripts/entities/conversation.js based on data model
+- [ ] T010 [P] Create Message class in scripts/entities/message.js based on data model
+- [ ] T011 [P] Create UserInput class in scripts/entities/user-input.js based on data model
 - [ ] T012 [P] Create configuration constants in scripts/config.js with Groq API key placeholder
 - [ ] T013 [P] Create API client for Groq integration in scripts/api-client.js
 - [ ] T014 [P] Create utility functions in scripts/utils.js for common operations
 - [ ] T015 [P] Create basic chat UI structure in index.html with text input and display area
+- [ ] T015a [P] Create conversation context management service in scripts/services/conversation-service.js
+- [ ] T015b [P] Implement conversation context persistence in browser memory in scripts/services/conversation-service.js
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -103,6 +105,7 @@ description: "Task list for AI Chatbot with Text and Voice Interactions implemen
 - [ ] T032 [US2] Create visual feedback for voice recording in styles/chat.css
 - [ ] T033 [US2] Add voice input to text processing in scripts/voice-input.js
 - [ ] T034 [US2] Integrate voice input with chat functionality in scripts/main.js
+- [ ] T034a [US2] Integrate voice input with conversation context management in scripts/voice-input.js
 - [ ] T035 [US2] Implement fallback to text input when voice fails in scripts/voice-input.js
 - [ ] T036 [US2] Add accessibility features for voice input controls in index.html
 
@@ -128,6 +131,7 @@ description: "Task list for AI Chatbot with Text and Voice Interactions implemen
 - [ ] T041 [US3] Implement speech playback controls in scripts/voice-output.js
 - [ ] T042 [US3] Add speech rate, pitch, and volume controls in scripts/voice-output.js
 - [ ] T043 [US3] Integrate voice output with chat responses in scripts/chat.js
+- [ ] T043a [US3] Integrate voice output with conversation context management in scripts/voice-output.js
 - [ ] T044 [US3] Implement fallback to text-only when voice fails in scripts/voice-output.js
 - [ ] T045 [US3] Add visual feedback for speech playback in styles/chat.css
 - [ ] T046 [US3] Create toggle between text and voice output modes in scripts/main.js
@@ -141,6 +145,10 @@ description: "Task list for AI Chatbot with Text and Voice Interactions implemen
 **Purpose**: Improvements that affect multiple user stories
 
 - [ ] T047 [P] Add comprehensive error handling across all modules
+- [ ] T047a [P] Implement retry mechanism for AI service unavailability in scripts/api-client.js
+- [ ] T047b [P] Implement timeout handling for AI service calls in scripts/api-client.js
+- [ ] T047c [P] Implement input length validation and truncation in scripts/chat.js
+- [ ] T047d [P] Implement output length validation and truncation in scripts/chat.js
 - [ ] T048 [P] Add rate limiting handling for Groq API in scripts/api-client.js
 - [ ] T049 [P] Add performance monitoring and timing measurements
 - [ ] T050 [P] Add animations for message flow in styles/animations.css

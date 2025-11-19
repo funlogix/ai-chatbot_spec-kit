@@ -92,7 +92,11 @@ scripts/
 ├── voice-output.js       # Voice output processing
 ├── api-client.js         # API interaction logic
 ├── utils.js              # Utility functions
-└── config.js             # Configuration constants
+├── config.js             # Configuration constants
+└── entities/             # Data model entities
+    ├── conversation.js   # Conversation entity
+    ├── message.js        # Message entity
+    └── user-input.js     # UserInput entity
 tests/
 ├── unit/
 │   ├── chat.test.js      # Unit tests for chat logic

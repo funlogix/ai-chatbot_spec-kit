@@ -77,7 +77,7 @@ Chatbot converts its text responses to speech, allowing users to listen to respo
 
 - **Conversation**: Represents a sequence of messages between user and chatbot, including both text and metadata about the interaction
 - **Message**: Individual unit of communication, containing content, timestamp, direction (user/bot), and media type (text or audio)
-- **User Input**: Container for text or audio data that has been provided by the user for processing by the chatbot
+- **User Input**: Container for text or audio data that has been provided by the user for processing by the chatbot. This entity is created when user provides input via text or voice, and may be transformed (e.g. audio to text) before being processed by the AI service.
 
 ## Success Criteria *(mandatory)*
 
@@ -98,3 +98,4 @@ Chatbot converts its text responses to speech, allowing users to listen to respo
 - Q: How should the system behave when voice services fail? → A: System degrades gracefully to text-only mode when voice services fail
 - Q: What accessibility standards should be followed? → A: Support basic WCAG 2.1 AA compliance for web accessibility
 - Q: What are the performance requirements for voice processing? → A: Voice input/output should have sub-3 second response time for 80% of requests
+- Q: How do we prioritize the different response time requirements? → A: Prioritize as follows: 1) Sub-3 second voice processing for 80% of requests (primary), 2) Sub-2 second text-to-speech output (secondary), 3) Sub-5 second text responses 95% of time (baseline)
