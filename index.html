@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot with Text and Voice Interactions</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/chat.css">
+    <link rel="stylesheet" href="styles/animations.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Chatbot</h1>
+        </header>
+        
+        <main>
+            <div id="chat-container">
+                <div id="chat-history"></div>
+                <div id="input-area">
+                    <button id="voice-input-btn" title="Voice Input">🎤</button>
+                    <input type="text" id="message-input" placeholder="Type your message here..." aria-label="Type your message">
+                    <button id="send-btn" title="Send Message">➤</button>
+                    <button id="voice-output-btn" title="Toggle Voice Output">🔊</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="scripts/config.js"></script>
+    <script src="scripts/entities/conversation.js"></script>
+    <script src="scripts/entities/message.js"></script>
+    <script src="scripts/entities/user-input.js"></script>
+    <script src="scripts/services/conversation-service.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/api-client.js"></script>
+    <script src="scripts/chat.js"></script>
+    <script src="scripts/voice-input.js"></script>
+    <script src="scripts/voice-output.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
