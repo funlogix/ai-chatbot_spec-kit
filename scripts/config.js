@@ -3,7 +3,7 @@
 const CONFIG = {
   // Groq API settings
   GROQ_API_BASE_URL: 'https://api.groq.com/openai/v1',
-  GROQ_API_KEY: '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', // This should be set by the user in a secure way
+  GROQ_API_KEY: '', // This should be set by the user in a secure way
   GROQ_DEFAULT_MODEL: 'openai/gpt-oss-120b',  // Default model for chat functionality
   
   // API Limits and Settings
