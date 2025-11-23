@@ -65,6 +65,7 @@ A user wants to switch between different AI inference providers (like OpenAI, Ge
 2. **Given** the application has multiple providers configured, **When** a user switches from one provider to another, **Then** the system seamlessly uses the new provider without errors.
 3. **Given** the user is making requests at a rate that exceeds provider limits, **When** the rate limit is reached, **Then** the system informs the user of the rate limit and prevents further requests until the limit resets.
 4. **Given** the user is selecting an AI provider for the first time, **When** the provider selection interface is displayed, **Then** the system shows data privacy information for each available provider.
+5. **Given** the selected provider is unavailable or returns an error, **When** a user attempts to use the provider, **Then** the system returns an error to the user without attempting to fall back to another provider and provides guidance on next steps.
 
 ---
 
@@ -102,9 +103,10 @@ A developer or system administrator needs to configure which AI models from diff
 ### Edge Cases
 
 - What happens when a selected provider is temporarily unavailable? How does the system handle API key validation and authentication errors?
-- How does the system handle provider rate limits or quota exhaustion?
+- How does the system handle provider rate limits or quota exhaustion, especially for free-tier providers which are preferred?
 - What occurs when switching providers mid-conversation or during a long-running request?
 - How does the system behave when a provider API changes or becomes deprecated?
+- How does the system handle removal of providers currently assigned to active task types?
 
 ## Requirements *(mandatory)*
 
@@ -128,6 +130,8 @@ A developer or system administrator needs to configure which AI models from diff
 - **FR-016**: System MUST allow authorized users to assign specific providers/models to different task types (chat, image, etc.)
 - **FR-017**: System MUST provide comprehensive logging, metrics collection, and request tracing for observability
 - **FR-018**: System MUST use standard REST APIs with versioned endpoints for interacting with AI providers
+- **FR-019**: System MUST ensure unique identification of AI providers to prevent configuration conflicts
+- **FR-020**: System MUST prevent removal of providers currently assigned to active task types without proper handling
 
 ### Key Entities
 
