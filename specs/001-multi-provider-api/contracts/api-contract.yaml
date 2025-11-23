@@ -1,0 +1,418 @@
+openapi: 3.0.3
+info:
+  title: Multi-Provider API Support
+  description: API for managing multiple AI providers and switching between them
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://your-domain.com
+    description: Production server
+
+paths:
+  /api/providers/available:
+    get:
+      summary: Get all available providers
+      description: Retrieves a list of all configured AI providers that users can select
+      responses:
+        '200':
+          description: List of available providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Provider'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/provider/select:
+    post:
+      summary: Select a provider
+      description: Sets the currently selected AI provider for the user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                providerId:
+                  type: string
+                  description: Unique identifier of the provider to select
+                modelId:
+                  type: string
+                  description: Specific model ID if specified
+              required:
+                - providerId
+      responses:
+        '200':
+          description: Provider selection successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderSelectionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/providers/configure:
+    post:
+      summary: Configure a new provider
+      description: Adds or updates a provider configuration (requires admin privileges)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderConfig'
+      responses:
+        '200':
+          description: Provider configuration updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderConfigResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /api/provider/{providerId}/status:
+    get:
+      summary: Get provider status
+      description: Checks if the specified provider is active and accessible
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Provider status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderStatus'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/providers/rate-limits:
+    get:
+      summary: Get current rate limit status
+      description: Retrieves the current rate limit usage for all configured providers
+      responses:
+        '200':
+          description: Current rate limit status for all providers
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/RateLimitStatus'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/providers/task-assignments:
+    get:
+      summary: Get provider-task assignments
+      description: Gets which providers are assigned to which task types
+      responses:
+        '200':
+          description: Provider-task assignments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProviderTaskAssignment'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      summary: Update provider-task assignments
+      description: Updates which providers are assigned to which task types (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProviderTaskAssignment'
+      responses:
+        '200':
+          description: Provider-task assignments updated successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProviderTaskAssignment'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+components:
+  schemas:
+    Provider:
+      type: object
+      properties:
+        providerId:
+          type: string
+          description: Unique identifier for the provider
+        providerName:
+          type: string
+          description: Display name for the provider
+        endpoint:
+          type: string
+          description: API endpoint for the provider
+        models:
+          type: array
+          items:
+            $ref: '#/components/schemas/Model'
+        tier:
+          type: string
+          enum: [free, paid, enterprise]
+          description: The provider tier
+        isActive:
+          type: boolean
+          description: Whether the provider is currently active
+        rateLimit:
+          $ref: '#/components/schemas/RateLimit'
+      required:
+        - providerId
+        - providerName
+        - endpoint
+        - models
+        - isActive
+
+    Model:
+      type: object
+      properties:
+        modelId:
+          type: string
+          description: Unique identifier for the model
+        modelName:
+          type: string
+          description: Display name for the model
+        capabilities:
+          type: array
+          items:
+            type: string
+          description: What the model can do
+      required:
+        - modelId
+        - modelName
+        - capabilities
+
+    RateLimit:
+      type: object
+      properties:
+        requestsPerMinute:
+          type: integer
+          description: Max requests per minute
+        requestsPerDay:
+          type: integer
+          description: Max requests per day
+        tokensPerMinute:
+          type: integer
+          description: Max tokens per minute
+      required:
+        - requestsPerMinute
+
+    ProviderSelectionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        providerId:
+          type: string
+          description: The selected provider ID
+        message:
+          type: string
+          description: Response message
+      required:
+        - success
+        - providerId
+        - message
+
+    ProviderConfig:
+      type: object
+      properties:
+        providerId:
+          type: string
+          description: Unique identifier for the provider
+        providerName:
+          type: string
+          description: Display name for the provider
+        endpoint:
+          type: string
+          description: API endpoint for the provider
+        apiKey:
+          type: string
+          description: API key for the provider (will be stored securely)
+        tier:
+          type: string
+          enum: [free, paid, enterprise]
+          description: The provider tier
+        rateLimit:
+          $ref: '#/components/schemas/RateLimit'
+      required:
+        - providerId
+        - providerName
+        - endpoint
+        - apiKey
+
+    ProviderConfigResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        providerId:
+          type: string
+          description: The configured provider ID
+        message:
+          type: string
+          description: Response message
+      required:
+        - success
+        - providerId
+        - message
+
+    ProviderStatus:
+      type: object
+      properties:
+        providerId:
+          type: string
+          description: The provider ID
+        isActive:
+          type: boolean
+          description: Whether the provider is currently active
+        canConnect:
+          type: boolean
+          description: Whether the system can connect to the provider
+        lastChecked:
+          type: string
+          format: date-time
+          description: When the status was last checked
+      required:
+        - providerId
+        - isActive
+        - canConnect
+        - lastChecked
+
+    RateLimitStatus:
+      type: object
+      properties:
+        providerId:
+          type: string
+          description: The provider ID
+        currentRequestsPerMinute:
+          type: integer
+          description: Current requests in the past minute
+        currentRequestsPerDay:
+          type: integer
+          description: Current requests in the past day
+        remainingRequestsPerMinute:
+          type: integer
+          description: Remaining requests allowed in the current minute
+        remainingRequestsPerDay:
+          type: integer
+          description: Remaining requests allowed in the current day
+        resetTime:
+          type: string
+          format: date-time
+          description: When the rate limits will reset
+      required:
+        - providerId
+        - currentRequestsPerMinute
+        - remainingRequestsPerMinute
+        - resetTime
+
+    ProviderTaskAssignment:
+      type: object
+      properties:
+        taskType:
+          type: string
+          description: The type of task (e.g., chat, image-generation)
+        providerId:
+          type: string
+          description: The provider ID assigned to this task
+        modelId:
+          type: string
+          description: The model ID assigned to this task
+      required:
+        - taskType
+        - providerId
+        - modelId
+
+  responses:
+    BadRequestError:
+      description: Bad request - invalid parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              message:
+                type: string
+            required:
+              - error
+              - message
+    UnauthorizedError:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: unauthorized
+              message:
+                type: string
+                example: Authentication required
+            required:
+              - error
+              - message
+    ForbiddenError:
+      description: Forbidden - insufficient privileges
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: forbidden
+              message:
+                type: string
+                example: Insufficient privileges to perform this action
+            required:
+              - error
+              - message
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: not_found
+              message:
+                type: string
+                example: Requested resource not found
+            required:
+              - error
+              - message
