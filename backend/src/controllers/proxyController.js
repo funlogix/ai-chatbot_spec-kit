@@ -189,9 +189,9 @@ const ProxyController = {
     try {
       const { providerId, model, messages, ...requestParams } = req.body;
       
-      if (!providerId || !model || !messages) {
-        return res.status(400).json({ 
-          error: 'providerId, model, and messages are required' 
+      if (!providerId || !messages) {
+        return res.status(400).json({
+          error: 'providerId and messages are required'
         });
       }
 
@@ -200,11 +200,26 @@ const ProxyController = {
         url: '/chat/completions',
         method: 'POST',
         data: {
-          model,
+          model: model || null,  // May be null initially, will be set below
           messages,
           ...requestParams
         }
       };
+
+      // If no model is specified or it's null, try to get the default model for this provider
+      if (!requestData.data.model) {
+        // We need to get the default from the provider configuration
+        // Since we don't have direct access to the provider service in this function,
+        // we'll use the default models that are known
+        const defaultModels = {
+          'openai': 'o4-mini',
+          'groq': 'openai/gpt-oss-120b',
+          'gemini': 'gemini-2.5-flash',
+          'openrouter': 'z-ai/glm-4.5-air:free'
+        };
+
+        requestData.data.model = defaultModels[providerId] || 'openai/gpt-oss-120b';
+      }
 
       // Make the request to the provider API
       const response = await apiProxyService.makeRequest(providerId, requestData);

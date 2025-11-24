@@ -1,55 +1,47 @@
+// frontend/src/components/ModelSelector/index.js
 /**
  * ModelSelector Component
- * Allows users to select from available AI models for the selected provider
+ * Allows users to select which AI model to use for their requests
  */
+import ModelService from '../../services/api/modelService.js';
+
 class ModelSelector {
   constructor(containerId, options = {}) {
     this.containerId = containerId;
     this.container = document.getElementById(containerId);
     this.options = {
       displayType: options.displayType || 'dropdown', // 'dropdown' or 'radio'
+      providerId: options.providerId || null, // Optional default provider
       onModelChange: options.onModelChange || null,
       ...options
     };
-    
+
     this.models = [];
     this.selectedModelId = null;
     this.selectedProviderId = null;
-    this.modelService = null;
-    
+
     this.init();
   }
 
   async init() {
-    // Import the model service
-    const { default: modelService } = await import('../../services/api/modelService.js');
-    this.modelService = modelService;
-    
-    // Render the component
+    // Render the component initially
     this.render();
-    this.attachEventListeners();
+    
+    // Load models if a provider is already selected
+    if (this.options.providerId) {
+      await this.loadModelsForProvider(this.options.providerId);
+    }
   }
 
-  async loadModels(providerId) {
-    if (!providerId) {
-      // Clear models if no provider selected
-      this.models = [];
-      this.selectedModelId = null;
-      this.updateModelSelection();
-      return;
-    }
-    
+  async loadModelsForProvider(providerId) {
     try {
-      // Get models for the specified provider
-      this.models = await this.modelService.getModelsByProvider(providerId);
       this.selectedProviderId = providerId;
-      
-      // Update the UI
-      this.updateModelSelection();
+      this.models = await ModelService.getProviderModels(providerId);
+      this.render();
+      this.attachEventListeners();
     } catch (error) {
       console.error(`Error loading models for provider ${providerId}:`, error);
-      // Show error to user
-      this.showError('Failed to load models for this provider. Please try again later.');
+      this.showError(`Failed to load models for ${providerId}. Please try selecting a different provider.`);
     }
   }
 
@@ -58,31 +50,43 @@ class ModelSelector {
       console.error(`Container with ID ${this.containerId} not found`);
       return;
     }
-    
+
     // Clear the container
     this.container.innerHTML = '';
-    
+
     // Create the main wrapper
     const wrapper = document.createElement('div');
     wrapper.className = 'model-selector';
-    
+
     // Create label
     const label = document.createElement('label');
-    label.textContent = 'Select AI Model:';
+    label.textContent = 'Select Model:';
     label.setAttribute('for', 'model-select');
-    
-    // Create the model selection element (initially disabled if no provider selected)
+    label.style.display = 'block';
+    label.style.marginBottom = '0.5rem';
+
+    // Create the appropriate selection element
     let modelElement;
     if (this.options.displayType === 'radio') {
       modelElement = this.createRadioSelection();
     } else {
       modelElement = this.createDropdownSelection();
     }
-    
-    // Add label and selection element to wrapper
+
+    // Add a note about the selected provider
+    if (this.selectedProviderId) {
+      const providerNote = document.createElement('div');
+      providerNote.style.fontSize = '0.8em';
+      providerNote.style.marginTop = '0.25rem';
+      providerNote.style.color = '#6c757d';
+      providerNote.textContent = `Models for: ${this.selectedProviderId}`;
+      wrapper.appendChild(providerNote);
+    }
+
+    // Add elements to wrapper
     wrapper.appendChild(label);
     wrapper.appendChild(modelElement);
-    
+
     // Add to container
     this.container.appendChild(wrapper);
   }
@@ -91,88 +95,92 @@ class ModelSelector {
     const select = document.createElement('select');
     select.id = 'model-select';
     select.className = 'model-select';
-    
+    select.disabled = this.models.length === 0; // Disable if no models available
+
     // Add default option
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
-    defaultOption.textContent = this.selectedProviderId ? 'Choose a model...' : 'Select a provider first...';
-    defaultOption.disabled = !this.selectedProviderId;
+    if (this.models.length === 0) {
+      defaultOption.textContent = 'No models available - select a provider first';
+    } else {
+      defaultOption.textContent = 'Choose a model...';
+    }
     select.appendChild(defaultOption);
-    
+
     // Add options for each model
     this.models.forEach(model => {
       const option = document.createElement('option');
-      option.value = model.modelId;
-      option.textContent = model.modelName;
-      if (model.modelId === this.selectedModelId) {
+      option.value = model.id;
+      option.textContent = model.name;
+      if (model.id === this.selectedModelId) {
         option.selected = true;
       }
       select.appendChild(option);
     });
-    
-    // Disable if no provider selected
-    select.disabled = !this.selectedProviderId;
-    
+
+    // Prevent selection of the default option (empty value)
+    select.addEventListener('change', (e) => {
+      if (!e.target.value) {
+        // If the default option was selected, reset to previous selection
+        if (this.selectedModelId) {
+          e.target.value = this.selectedModelId;
+        } else {
+          // If no previous selection, just return without processing
+          return;
+        }
+      } else {
+        // Process the valid selection
+        this.handleModelChange(e.target.value);
+      }
+    });
+
     return select;
   }
 
   createRadioSelection() {
     const radioContainer = document.createElement('div');
     radioContainer.className = 'model-radios';
-    
-    if (!this.selectedProviderId) {
-      // Show message if no provider is selected
-      const message = document.createElement('span');
-      message.textContent = 'Select a provider first...';
-      radioContainer.appendChild(message);
+
+    if (this.models.length === 0) {
+      const noModelsNote = document.createElement('div');
+      noModelsNote.style.fontStyle = 'italic';
+      noModelsNote.style.color = '#6c757d';
+      noModelsNote.textContent = 'No models available - select a provider first';
+      radioContainer.appendChild(noModelsNote);
       return radioContainer;
     }
-    
+
     this.models.forEach((model, index) => {
       const radioWrapper = document.createElement('div');
       radioWrapper.style.display = 'flex';
       radioWrapper.style.alignItems = 'center';
       radioWrapper.style.marginBottom = '0.5rem';
-      
+
       const radio = document.createElement('input');
       radio.type = 'radio';
-      radio.id = `model-${model.modelId}`;
+      radio.id = `model-${model.id}`;
       radio.name = 'model-selector';
-      radio.value = model.modelId;
-      if (model.modelId === this.selectedModelId) {
+      radio.value = model.id;
+      if (model.id === this.selectedModelId) {
         radio.checked = true;
       }
-      
+
       const label = document.createElement('label');
-      label.htmlFor = `model-${model.modelId}`;
+      label.htmlFor = `model-${model.id}`;
       label.style.marginLeft = '0.5rem';
-      label.textContent = model.modelName;
-      
+      label.textContent = `${model.name} (${model.providerId})`;
+
       radioWrapper.appendChild(radio);
       radioWrapper.appendChild(label);
       radioContainer.appendChild(radioWrapper);
     });
-    
+
     return radioContainer;
   }
 
-  updateModelSelection() {
-    // Re-render the component to reflect new models
-    this.render();
-    this.attachEventListeners();
-    
-    // If there's only one model, select it by default
-    if (this.models.length === 1) {
-      this.selectModel(this.models[0].modelId);
-    }
-  }
-
   attachEventListeners() {
-    if (!this.selectedProviderId) {
-      // If no provider is selected, we can't attach event listeners to model selection
-      return;
-    }
-    
+    if (this.models.length === 0) return; // No need for event listeners if no models
+
     if (this.options.displayType === 'radio') {
       // For radio buttons, add change listener to the container
       const radioContainer = this.container.querySelector('.model-radios');
@@ -194,42 +202,43 @@ class ModelSelector {
     }
   }
 
-  async handleModelChange(modelId) {
+  handleModelChange(modelId) {
     if (!modelId) {
-      // Reset selection
       this.selectedModelId = null;
-      if (this.options.onModelChange) {
-        await this.options.onModelChange(null);
-      }
       return;
     }
 
     this.selectedModelId = modelId;
-    
+
     // Call the callback if provided
     if (this.options.onModelChange) {
-      await this.options.onModelChange(modelId);
+      this.options.onModelChange(modelId);
     }
   }
 
-  showError(message) {
-    // Create and show an error element
-    const errorContainer = document.createElement('div');
-    errorContainer.className = 'error-message';
-    errorContainer.textContent = message;
-    
-    // Clear container and add error
-    this.container.innerHTML = '';
-    this.container.appendChild(errorContainer);
+  // Method to load models for a specific provider
+  async loadModelsForProvider(providerId) {
+    try {
+      this.models = await ModelService.getProviderModels(providerId);
+      this.selectedProviderId = providerId;
+      this.render();
+      this.attachEventListeners();
+    } catch (error) {
+      console.error(`Error loading models for provider ${providerId}:`, error);
+
+      // More specific error handling for different error types
+      if (error.message.includes('404') || error.message.includes('not found')) {
+        this.showError(`Provider "${providerId}" is not supported or not configured on the server. Please select a different provider.`);
+      } else if (error.message.includes('API key')) {
+        this.showError(`API key not configured for ${providerId}. Please configure an API key to use this provider.`);
+      } else {
+        this.showError(`Failed to load models for ${providerId}. Error: ${error.message}`);
+      }
+    }
   }
 
   // Method to programmatically select a model
-  async selectModel(modelId) {
-    if (!this.selectedProviderId) {
-      console.warn('Cannot select model: no provider selected');
-      return;
-    }
-    
+  selectModel(modelId) {
     if (this.options.displayType === 'dropdown') {
       const select = this.container.querySelector('#model-select');
       if (select) {
@@ -247,14 +256,21 @@ class ModelSelector {
     }
   }
 
-  // Method to get currently selected model
-  getSelectedModel() {
-    return this.selectedModelId;
-  }
+  showError(message) {
+    // Create and show an error element
+    const errorContainer = document.createElement('div');
+    errorContainer.className = 'error-message';
+    errorContainer.style.color = '#dc3545';
+    errorContainer.style.marginTop = '0.5rem';
+    errorContainer.style.padding = '0.5rem';
+    errorContainer.style.border = '1px solid #dc3545';
+    errorContainer.style.borderRadius = '4px';
+    errorContainer.style.backgroundColor = '#f8d7da';
+    errorContainer.textContent = message;
 
-  // Method to get currently selected provider
-  getSelectedProvider() {
-    return this.selectedProviderId;
+    // Clear container and add error
+    this.container.innerHTML = '';
+    this.container.appendChild(errorContainer);
   }
 }
 

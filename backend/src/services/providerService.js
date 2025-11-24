@@ -20,8 +20,8 @@ class ProviderService {
         name: 'OpenAI',
         endpoint: process.env.OPENAI_API_BASE_URL || 'https://api.openai.com/v1',
         config: {
-          models: ['gpt-4', 'gpt-4-turbo', 'gpt-3.5-turbo'],
-          defaultModel: 'gpt-4'
+          models: ['o4-mini', 'gpt-5'],
+          defaultModel: 'o4-mini'
         }
       },
       {
@@ -29,8 +29,8 @@ class ProviderService {
         name: 'Groq',
         endpoint: process.env.GROQ_API_BASE_URL || 'https://api.groq.com/openai/v1',
         config: {
-          models: ['llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768'],
-          defaultModel: 'llama3-70b-8192'
+          models: ['openai/gpt-oss-120b', 'qwen/qwen3-32b'],
+          defaultModel: 'openai/gpt-oss-120b'
         }
       },
       {
@@ -38,8 +38,8 @@ class ProviderService {
         name: 'Google Gemini',
         endpoint: process.env.GEMINI_API_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta',
         config: {
-          models: ['gemini-pro', 'gemini-1.5-pro', 'gemini-1.5-flash'],
-          defaultModel: 'gemini-pro'
+          models: ['gemini-2.5-flash', 'gemini-2.5-pro'],
+          defaultModel: 'gemini-2.5-flash'
         }
       },
       {
@@ -47,8 +47,8 @@ class ProviderService {
         name: 'OpenRouter',
         endpoint: process.env.OPENROUTER_API_BASE_URL || 'https://openrouter.ai/api/v1',
         config: {
-          models: ['openchat/openchat-7b', 'nousresearch/nous-hermes-llama2-13b'],
-          defaultModel: 'openchat/openchat-7b'
+          models: ['z-ai/glm-4.5-air:free', 'x-ai/grok-4.1-fast:free'],
+          defaultModel: 'z-ai/glm-4.5-air:free'
         }
       }
     ];

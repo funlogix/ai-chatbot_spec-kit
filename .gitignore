@@ -62,3 +62,4 @@ coverage/
 # Configuration and chat files containing API keys
 chat.json
 config.json
+config2.json

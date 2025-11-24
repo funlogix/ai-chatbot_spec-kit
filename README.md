@@ -30,17 +30,29 @@ A web-based AI chatbot that supports both text and voice interactions using Groq
    ```bash
    npm install
    ```
-3. Create a `.env` file in the project root based on the `.env.example` file
+3. Create a `.env` file in the project root based on the `.env` file in backend/ or the `.env.example` file
 4. Add your API keys to the `.env` file:
    - `GROQ_API_KEY` - Your Groq API key
    - `OPENAI_API_KEY` - Your OpenAI API key (optional)
    - `GEMINI_API_KEY` - Your Google Gemini API key (optional)
    - `OPENROUTER_API_KEY` - Your OpenRouter API key (optional)
+   - `JWT_SECRET` - Secret key for JWT tokens (use a strong random string)
+   - `ENCRYPTION_KEY` - 32-character key for encrypting API keys (use a strong random string)
+   - `ADMIN_ACCESS_KEY` - Access key for admin functions (use a strong random string)
 5. Start the backend server:
    ```bash
-   npm run dev
+   npm start
+   ```
+   Or for development with auto-restart:
+   ```bash
+   npm run dev  # requires nodemon: npm install -g nodemon
    ```
 6. The backend server will run on `http://localhost:3000` by default
+7. Access the API endpoints through:
+   - Available providers: `GET http://localhost:3000/api/providers/available`
+   - Provider status: `GET http://localhost:3000/api/providers/{providerId}/status`
+   - Provider switching: `POST http://localhost:3000/api/providers/select`
+   - Chat completions: `POST http://localhost:3000/api/proxy/chat/completions`
 
 ## Usage
 

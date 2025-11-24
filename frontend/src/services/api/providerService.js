@@ -14,13 +14,7 @@ class ProviderService {
    * @returns {string} Base URL for API requests
    */
   getBaseURL() {
-    const env = process?.env?.NODE_ENV || 'development';
-    
-    if (env === 'production') {
-      return '';
-    } else {
-      return 'http://localhost:3000';
-    }
+    return 'http://localhost:3000'; // Our backend server
   }
 
   /**
@@ -59,7 +53,9 @@ class ProviderService {
       const response = await fetch(`${this.baseURL}/api/providers/${providerId}/status`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          // Include authentication token if available
+          'Authorization': `Bearer ${localStorage.getItem('access_token') || 'anon'}`
         }
       });
 
@@ -85,7 +81,9 @@ class ProviderService {
       const response = await fetch(`${this.baseURL}/api/providers/select`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          // Include authentication token if available
+          'Authorization': `Bearer ${localStorage.getItem('access_token') || 'anon'}`,
         },
         body: JSON.stringify({ providerId })
       });
@@ -103,112 +101,33 @@ class ProviderService {
   }
 
   /**
-   * Health check for a provider
-   * @param {string} providerId - ID of the provider to check
-   * @returns {Promise<Object>} Health check result
+   * Get rate limit information - this is handled by middleware, not a separate endpoint
+   * @returns {Object} Rate limit information based on provider configuration
    */
-  async healthCheck(providerId) {
-    try {
-      const response = await this.getProviderStatus(providerId);
-      return {
-        providerId,
-        isHealthy: response.status === 'available' || response.hasApiKey,
-        timestamp: new Date().toISOString(),
-        details: response
-      };
-    } catch (error) {
-      return {
-        providerId,
-        isHealthy: false,
-        timestamp: new Date().toISOString(),
-        details: { error: error.message }
-      };
-    }
-  }
-
-  /**
-   * Get provider configuration (admin only)
-   * @param {string} adminAccessKey - Admin access key
-   * @returns {Promise<Array>} Array of provider configurations
-   */
-  async getAllProviderConfigs(adminAccessKey) {
-    try {
-      const response = await fetch(`${this.baseURL}/api/providers`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Admin-Access': adminAccessKey
-        }
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Failed to get provider configs: ${response.status} - ${errorData.error || response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data.providers;
-    } catch (error) {
-      console.error('Error getting provider configurations:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Configure a provider (admin only)
-   * @param {Object} config - Configuration object
-   * @param {string} adminAccessKey - Admin access key
-   * @returns {Promise<Object>} Response from the backend
-   */
-  async configureProvider(config, adminAccessKey) {
-    try {
-      const response = await fetch(`${this.baseURL}/api/providers/configure`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Admin-Access': adminAccessKey
+  getRateLimits() {
+    // The backend handles rate limiting through middleware
+    // We return a default response indicating how rate limiting works
+    return {
+      info: 'Rate limits are handled by backend middleware. Check response headers for current limits.',
+      providers: {
+        'openai': {
+          rpm: 3000,  // requests per minute based on OpenAI limits
+          window: '1 minute'
         },
-        body: JSON.stringify(config)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Failed to configure provider: ${response.status} - ${errorData.error || response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error configuring provider:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Delete a provider configuration (admin only)
-   * @param {string} providerId - ID of the provider to delete
-   * @param {string} adminAccessKey - Admin access key
-   * @returns {Promise<Object>} Response from the backend
-   */
-  async deleteProviderConfig(providerId, adminAccessKey) {
-    try {
-      const response = await fetch(`${this.baseURL}/api/providers/${providerId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Admin-Access': adminAccessKey
+        'groq': {
+          rpm: 30,    // requests per minute based on Groq free tier limits
+          window: '1 minute'
+        },
+        'gemini': {
+          rpm: 600,   // requests per minute based on Gemini limits
+          window: '1 minute'
+        },
+        'openrouter': {
+          rpm: 100,   // requests per minute based on OpenRouter limits
+          window: '1 minute'
         }
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`Failed to delete provider config: ${response.status} - ${errorData.error || response.statusText}`);
       }
-
-      return await response.json();
-    } catch (error) {
-      console.error(`Error deleting provider config for ${providerId}:`, error);
-      throw error;
-    }
+    };
   }
 }
 
