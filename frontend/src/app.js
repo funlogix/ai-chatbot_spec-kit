@@ -63,9 +63,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentProviderId = providerId;
         if (modelId) {
           currentModelId = modelId;  // Use the default model provided by the backend
+        } else {
+          // If no default model was provided (which shouldn't happen if the backend is working correctly),
+          // we should still update the model to null or keep existing one
+          // But let's ensure we try to load models for the new provider in any case
         }
-        // If no new modelId provided, keep the existing one if any
         console.log(`Current provider updated to: ${currentProviderId}, model: ${currentModelId}`);
+
+        // After provider changes, ensure the model selector loads the correct models
+        if (window.modelSelector && providerId) {
+          setTimeout(async () => {
+            try {
+              await window.modelSelector.loadModelsForProvider(providerId);
+              // If we have a default model from the API call above, select it in the dropdown
+              if (modelId) {
+                window.modelSelector.selectModel(modelId);
+                // Also update the global state to ensure consistency
+                currentModelId = modelId;
+              }
+            } catch (loadError) {
+              console.error(`Error loading models for provider ${providerId}:`, loadError);
+            }
+          }, 100); // Small delay to ensure UI updates
+        }
       }
     });
 

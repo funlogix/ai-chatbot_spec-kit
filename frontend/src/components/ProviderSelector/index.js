@@ -281,8 +281,8 @@ class ProviderSelector {
         if (providersResponse.ok) {
           const { providers } = await providersResponse.json();
           const provider = providers.find(p => p.id === providerId);
-          if (provider && provider.config && provider.config.defaultModel) {
-            defaultModelId = provider.config.defaultModel;
+          if (provider && provider.defaultModel) {  // Use the defaultModel from the provider response
+            defaultModelId = provider.defaultModel;
           }
         }
       } catch (modelError) {

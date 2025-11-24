@@ -221,8 +221,38 @@ class ModelSelector {
     try {
       this.models = await ModelService.getProviderModels(providerId);
       this.selectedProviderId = providerId;
+
+      // Try to get the default model for this provider from the backend
+      try {
+        const providersResponse = await fetch('http://localhost:3000/api/providers/available', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (providersResponse.ok) {
+          const { providers } = await providersResponse.json();
+          const provider = providers.find(p => p.id === providerId);
+          if (provider && provider.defaultModel) {
+            // Set the default model as the selected model
+            this.selectedModelId = provider.defaultModel;
+          }
+        }
+      } catch (providerError) {
+        console.error(`Error getting provider default model:`, providerError);
+        // Continue with the existing flow if we can't get the default
+      }
+
       this.render();
       this.attachEventListeners();
+
+      // If we have a default model, try to select it in the UI
+      if (this.selectedModelId) {
+        setTimeout(() => {
+          this.selectModel(this.selectedModelId);
+        }, 50); // Small delay to ensure UI is ready
+      }
     } catch (error) {
       console.error(`Error loading models for provider ${providerId}:`, error);
 
