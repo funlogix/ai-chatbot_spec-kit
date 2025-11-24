@@ -24,6 +24,7 @@
 - Q: What are the expected scalability limits and how should the system handle increased load? → A: Define target concurrent users and requests per second
 - Q: What observability capabilities should the system provide for monitoring and debugging? → A: System must provide comprehensive logging, metrics collection, and request tracing
 - Q: What communication protocols and versioning strategy should be used for interacting with AI providers? → A: Use standard REST APIs with versioned endpoints
+- Q: What backend architecture should be used to securely manage API keys and handle requests? → A: Implement a backend service that acts as a proxy between the frontend and AI providers, storing API keys securely and forwarding requests on behalf of clients
 
 ## Authorization Requirements
 
@@ -31,7 +32,7 @@ The system needs a mechanism to identify authorized developers and administrator
 
 ## API Key Management Process
 
-The process for configuring API keys must align with the security requirements established in User Story 2. This includes ensuring keys are never hardcoded in client-side code, stored securely using environment variables or external configuration files, and validated before use. The specific workflow for how authorized users input, store, validate, and access API keys will need to be defined during the technical planning phase.
+The process for configuring API keys must align with the security requirements established in User Story 2. This includes ensuring keys are never hardcoded in client-side code, stored securely using environment variables or external configuration files, and validated before use. A backend service will securely store and manage API keys, with the frontend communicating through secured API endpoints. The specific workflow for how authorized users input, store, validate, and access API keys will need to be defined during the technical planning phase.
 
 ## Data Privacy Disclosure Management
 
@@ -39,7 +40,7 @@ The system must ensure data privacy information for each AI provider is availabl
 
 ## Dynamic Configuration Management
 
-When authorized personnel make changes to provider configurations (adding/removing providers or assigning providers to task types), the system must propagate these changes to the running application without requiring a restart. The mechanism for how these configuration changes are made immediately available to users needs to be defined during the technical planning phase.
+When authorized personnel make changes to provider configurations (adding/removing providers or assigning providers to task types), the system must propagate these changes to the running application without requiring a restart. The backend service will handle configuration updates and the frontend will retrieve current configurations as needed. The mechanism for how these configuration changes are made immediately available to users needs to be defined during the technical planning phase.
 
 ## Error Handling and User Guidance
 
@@ -47,7 +48,16 @@ When an AI provider fails and the system returns an error to the user, the syste
 
 ## Rate Limiting Strategy
 
-The system needs to implement client-side rate limiting to prevent hitting provider API limits, but the specific conditions under which rate limiting applies may vary depending on provider tiers (e.g., free-tier vs paid). The strategy for handling different provider tiers and their respective limitations needs to be defined during the technical planning phase.
+The system needs to implement both client-side and server-side rate limiting to prevent hitting provider API limits, but the specific conditions under which rate limiting applies may vary depending on provider tiers (e.g., free-tier vs paid). The strategy for handling different provider tiers and their respective limitations needs to be defined during the technical planning phase.
+
+## Backend API Requirements
+
+A backend service is required to securely manage API keys and handle requests to AI providers. This service will:
+- Store API keys securely in environment variables or external config
+- Act as a proxy between the frontend and AI providers
+- Implement proper authentication and authorization
+- Handle rate limiting enforcement
+- Manage provider configurations
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -71,23 +81,23 @@ A user wants to switch between different AI inference providers (like OpenAI, Ge
 
 ### User Story 2 - Secure API Key Management (Priority: P1)
 
-A developer or system administrator needs to configure API keys for different providers without hardcoding them in JavaScript files. The system must securely manage these keys and allow for safe local development and testing without triggering GitHub security alerts.
+A developer or system administrator needs to configure API keys for different providers without hardcoding them in JavaScript files. The system must securely manage these keys through a backend service and allow for safe local development and testing without triggering GitHub security alerts.
 
 **Why this priority**: Security is paramount when handling API keys, and this requirement prevents exposing sensitive credentials that could be exploited.
 
-**Independent Test**: Can be tested by verifying that no API keys are present in JavaScript files that get deployed to the client, and that the system functions with keys stored securely on the server. Delivers secure handling of credentials.
+**Independent Test**: Can be tested by verifying that no API keys are present in JavaScript files that get deployed to the client, and that the system functions with keys stored securely on the backend. Delivers secure handling of credentials.
 
 **Acceptance Scenarios**:
 
 1. **Given** a development environment, **When** API keys are configured, **Then** the keys are not present in any client-side JavaScript files that are pushed to version control.
-2. **Given** the system is deployed, **When** an API request is made to an AI provider, **Then** the request uses securely stored API keys without exposing them to the client.
-3. **Given** the system is running with configured providers, **When** an authorized user adds or removes a provider configuration, **Then** the changes take effect immediately without requiring an application restart.
+2. **Given** the system is deployed, **When** an API request is made to an AI provider, **Then** the request uses securely stored API keys via a backend proxy without exposing them to the client.
+3. **Given** the system is running with configured providers, **When** an authorized user adds or removes a provider configuration, **Then** the changes take effect immediately through the backend service without requiring an application restart.
 
 ---
 
 ### User Story 3 - Administrative Model Configuration (Priority: P2)
 
-A developer or system administrator needs to configure which AI models from different providers to use for different task types (e.g., one provider for chat and another for image generation), with each provider having its own API keys managed securely.
+A developer or system administrator needs to configure which AI models from different providers to use for different task types (e.g., one provider for chat and another for image generation), with each provider having its own API keys managed securely through a backend service.
 
 **Why this priority**: This enables sophisticated configuration that allows optimal model selection for different AI task types, supporting the multi-provider architecture for varied use cases while maintaining security.
 
@@ -115,8 +125,8 @@ A developer or system administrator needs to configure which AI models from diff
 - **FR-001**: System MUST allow users to select from available AI inference providers through a UI element (dropdown, radio buttons, etc.)
 - **FR-002**: System MUST support configuration of multiple AI providers (OpenAI, Gemini, etc.) with different API keys
 - **FR-003**: System MUST securely manage API keys without hardcoding them in JavaScript files
-- **FR-004**: System MUST store API keys in a secure configuration mechanism (environment variables, external config files, etc.)
-- **FR-005**: System MUST route requests to the appropriate AI provider based on user selection
+- **FR-004**: System MUST store API keys in a secure configuration mechanism (backend service with environment variables or external config)
+- **FR-005**: System MUST route requests to the appropriate AI provider based on user selection via a backend proxy
 - **FR-006**: System MUST support different models from different providers for different AI tasks (chat, image generation, etc.)
 - **FR-007**: System MUST validate API keys are properly configured before attempting to use a provider
 - **FR-008**: System MUST provide error handling when a selected provider is unavailable or returns an error
@@ -132,6 +142,9 @@ A developer or system administrator needs to configure which AI models from diff
 - **FR-018**: System MUST use standard REST APIs with versioned endpoints for interacting with AI providers
 - **FR-019**: System MUST ensure unique identification of AI providers to prevent configuration conflicts
 - **FR-020**: System MUST prevent removal of providers currently assigned to active task types without proper handling
+- **FR-021**: System MUST provide backend API endpoints to securely manage and proxy AI provider requests
+- **FR-022**: System MUST implement backend service to handle API key storage and retrieval with proper authentication
+- **FR-023**: System MUST support both local development (via local backend server) and cloud deployment (e.g., Render.com) for the backend service
 
 ### Key Entities
 
@@ -142,6 +155,7 @@ A developer or system administrator needs to configure which AI models from diff
 - **User Preferences**: Settings that allow users to select which provider/model to use for their requests
 - **Task Type**: Category of AI task (e.g., chat, image generation, text processing) that determines which provider/model is used
 - **Data Privacy Information**: Details about how each provider handles user data, including retention policies, usage for training, and other privacy practices
+- **Backend Configuration**: Settings for the backend service including API endpoints, authentication mechanisms, and deployment configurations
 
 ## Success Criteria *(mandatory)*
 
@@ -152,3 +166,4 @@ A developer or system administrator needs to configure which AI models from diff
 - **SC-003**: No API keys are detected in client-side code or committed to version control systems
 - **SC-004**: Users can configure and test new API providers in local development environment without security alerts
 - **SC-005**: System supports at least 1000 concurrent users with response times under 2 seconds
+- **SC-006**: Backend service successfully handles API key management and request proxying with 99% success rate

@@ -7,19 +7,19 @@
 
 ## Summary
 
-This implementation plan details the development of a multi-provider API support feature for the AI chatbot. The primary requirement is to enable users to switch between different AI service providers (OpenAI, Groq, Gemini, OpenRouter) with different models, while maintaining security and rate limiting. The technical approach involves creating a modular provider system using plain JavaScript, HTML, and CSS that complies with the project's constitution of avoiding frameworks. The solution includes secure API key management, rate limiting per provider specifications, user preference storage, and role-based access controls for administrators.
+This implementation plan details the development of a multi-provider API support feature for the AI chatbot. The primary requirement is to enable users to switch between different AI service providers (OpenAI, Groq, Gemini, OpenRouter) with different models, while maintaining security and rate limiting. The technical approach involves creating a modular provider system that includes both frontend and backend components. The frontend uses plain JavaScript, HTML, and CSS that complies with the project's constitution of avoiding frameworks, while a backend service securely manages API keys and proxies requests to AI providers. The solution includes secure API key management, rate limiting per provider specifications, user preference storage, and role-based access controls for administrators.
 
 ## Technical Context
 
 **Language/Version**: JavaScript ES2020+ (as specified in QWEN.md)
-**Primary Dependencies**: Plain HTML, CSS, and JavaScript only (as per AI Chatbot Constitution - no frameworks allowed)
-**Storage**: Browser local storage or session storage for user preferences; config files for provider settings
+**Primary Dependencies**: Plain HTML, CSS, and JavaScript for frontend (as per AI Chatbot Constitution - no frameworks allowed); Node.js with Express for backend API
+**Storage**: Browser local storage or session storage for user preferences; backend environment variables for API keys; config files for provider settings
 **Testing**: Jest for unit tests, Cypress for end-to-end tests (based on project standards)
-**Target Platform**: Web browser (client-side application as specified in feature context)
-**Project Type**: Web (single-page application based on client-side nature)
+**Target Platform**: Web browser (client-side application) + Node.js server (backend proxy service)
+**Project Type**: Full-stack (frontend web app and backend API service)
 **Performance Goals**: <200ms response time for provider switching; handle rate limits appropriately as specified for each provider
-**Constraints**: No API keys in client-side code; must pass GitHub security alerts; client-side only (no backend changes); plain web technologies only per constitution
-**Scale/Scope**: Support multiple AI providers simultaneously; handle rate limits for different provider tiers; secure management of multiple API keys
+**Constraints**: No API keys in client-side code; must pass GitHub security alerts; backend handles secure API key management; plain web technologies for frontend per constitution
+**Scale/Scope**: Support multiple AI providers simultaneously; handle rate limits for different provider tiers; secure management of multiple API keys; support both local and cloud deployment (e.g., Render.com)
 
 ## Constitution Check
 
@@ -29,8 +29,8 @@ This implementation plan details the development of a multi-provider API support
 **Testing Standards**: PASS - Will implement comprehensive unit, integration, and end-to-end tests as required
 **User Experience Consistency**: PASS - UI elements for provider selection will follow existing design patterns
 **Performance Requirements**: PASS - Implementation will meet performance benchmarks for response times
-**Plain Web Technologies Only**: PASS - Using only plain HTML, CSS, and JavaScript as required
-**Technology Stack Governance**: PASS - Staying within vanilla HTML, CSS, and JavaScript constraints
+**Plain Web Technologies Only**: PASS - Using only plain HTML, CSS, and JavaScript for frontend as required; backend will use Node.js/Express
+**Technology Stack Governance**: PASS - Staying within vanilla HTML, CSS, and JavaScript for frontend; backend with Node.js/Express to securely handle API keys
 **Development Workflow**: PASS - Following appropriate development practices for TDD and documentation
 
 ## Project Structure
@@ -57,7 +57,32 @@ specs/[###-feature]/
 -->
 
 ```text
-# Option 2: Web application (since this is a client-side AI chatbot)
+# Full-stack application (fronted + backend API service)
+backend/
+├── src/
+│   ├── controllers/
+│   │   ├── providerController.js
+│   │   ├── apiKeyController.js
+│   │   └── proxyController.js
+│   ├── middleware/
+│   │   ├── authMiddleware.js
+│   │   └── rateLimitMiddleware.js
+│   ├── services/
+│   │   ├── providerService.js
+│   │   ├── apiProxyService.js
+│   │   └── configService.js
+│   ├── routes/
+│   │   ├── providers.js
+│   │   ├── apikeys.js
+│   │   └── proxy.js
+│   └── app.js
+├── tests/
+├── .env.example
+├── .gitignore
+├── package.json
+├── server.js
+└── README.md
+
 frontend/
 ├── src/
 │   ├── components/
@@ -98,7 +123,7 @@ tests/
     └── provider-switching.js
 ```
 
-**Structure Decision**: Selected web application structure since this is a client-side AI chatbot. The feature adds functionality to the frontend layer by enabling multi-provider support. The codebase will be organized to accommodate different provider integrations while maintaining a clean separation of concerns.
+**Structure Decision**: Selected full-stack structure with frontend web app and backend API service to securely manage API keys and proxy requests to AI providers. This adds the necessary backend layer to handle secure API key management while keeping the frontend compliant with the constitution's plain web technologies requirement.
 
 ## Complexity Tracking
 
@@ -106,5 +131,5 @@ tests/
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| Backend API service | Required to securely store and manage API keys without exposing them to client-side code | Client-side only approach would violate security requirement FR-009 |
+| Node.js/Express for backend | Standard technology choice for building API proxy services | Other backend technologies would add unnecessary complexity |

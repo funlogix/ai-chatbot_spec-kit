@@ -3,16 +3,16 @@
 ## Authorization and Access Control Details
 
 ### Decision: Simple role-based system with client-side cookie/session check
-- **Rationale**: Since this is a client-side application, we'll implement a simple authentication system where developers/administrators are identified via a special token or cookie that grants access to configuration screens
-- **Implementation**: Use localStorage/sessionStorage for storing user role information after authentication
+- **Rationale**: We'll implement a simple authentication system where developers/administrators are identified via a special token that grants access to configuration screens. The actual authentication will be handled by the backend service.
+- **Implementation**: Use localStorage/sessionStorage for storing authentication tokens after backend authentication
 - **Alternatives considered**: Server-side authentication (requires backend), JWT tokens (adds complexity), OAuth (overkill for this use case)
 
 ## API Key Management Process
 
-### Decision: Environment variables for server-side, secure config file for client-side
-- **Rationale**: Following the requirement to not expose API keys in client-side code, we'll implement a system where keys are loaded server-side and passed to the client in a secure way, or kept entirely server-side as a proxy
-- **Implementation**: Use environment variables for server-side storage, with a secure configuration file that is excluded via .gitignore for development
-- **Alternatives considered**: Hardcoded keys in source (blocked by security requirements), localStorage (less secure), encrypted files (adds complexity)
+### Decision: Backend service with environment variables for secure storage
+- **Rationale**: Following the requirement to not expose API keys in client-side code, we'll implement a backend proxy service that stores keys securely in environment variables and forwards requests to AI providers on behalf of clients
+- **Implementation**: Backend service using Node.js/Express with API keys stored in environment variables; frontend communicates through secured endpoints
+- **Alternatives considered**: Fully client-side approach (security violation), localStorage (would expose keys), encrypted files (still client-side, also a security risk)
 
 ## Data Privacy Disclosure Management
 
@@ -25,15 +25,15 @@
 
 ### Decision: Implement support for all specified providers with rate limiting
 - **Rationale**: The feature specification clearly outlines the required providers and models
-- **Implementation**: Create provider adapters for each service (Groq, OpenRouter, Gemini, OpenAI) that handle their specific rate limits and requirements
+- **Implementation**: Create frontend provider adapters that communicate with backend proxy service for each provider (Groq, OpenRouter, Gemini, OpenAI)
 - **Alternatives considered**: Supporting fewer providers (wouldn't meet requirements)
 
 ## Rate Limiting Strategy
 
-### Decision: Client-side tracking with provider-specific limits
-- **Rationale**: Each provider has different rate limits, so we need a flexible system that can handle various constraints
-- **Implementation**: Track usage per provider and implement appropriate delays/pause mechanisms when approaching limits
-- **Alternatives considered**: Server-side rate limiting (would require backend functionality), no rate limiting (would violate provider terms)
+### Decision: Combined client-side and backend rate limiting
+- **Rationale**: Each provider has different rate limits, so we need a flexible system that can handle various constraints on both client and server
+- **Implementation**: Client tracks usage and displays warnings; backend enforces actual limits and provides rate limiting headers
+- **Alternatives considered**: Only frontend rate limiting (easily bypassed), only backend (no user visibility)
 
 ## Error Handling and User Guidance
 
@@ -44,9 +44,9 @@
 
 ## Dynamic Configuration Updates
 
-### Decision: Real-time updates without application restart
+### Decision: Backend-driven updates with client synchronization
 - **Rationale**: Feature specification requires configuration changes to take effect immediately
-- **Implementation**: Use event-driven updates to notify all relevant components of configuration changes
+- **Implementation**: Backend service manages configurations; frontend polls or uses WebSocket to receive updates in real-time
 - **Alternatives considered**: Application restarts (contradicts requirements), delayed updates (reduces usability)
 
 ## Unique Provider Identification
@@ -55,3 +55,15 @@
 - **Rationale**: Feature specification already identifies this approach
 - **Implementation**: Use providerName:endpoint as a unique identifier to prevent conflicts
 - **Alternatives considered**: Just provider name (insufficient), just endpoint (not user-friendly)
+
+## Backend Architecture Research
+
+### Decision: Node.js/Express backend with proxy architecture
+- **Rationale**: Need a backend service to securely store API keys and proxy requests to AI providers. Node.js/Express is a lightweight, well-understood technology that fits well with the frontend JavaScript codebase.
+- **Implementation**: Create a proxy server that securely stores API keys and forwards requests to appropriate AI provider APIs
+- **Alternatives considered**: Other languages/frameworks (adds complexity), client-side only (violates security requirements), third-party proxy services (reduces control and increases dependencies)
+
+### Deployment Strategy: Support both local and cloud deployment (e.g., Render.com)
+- **Rationale**: Development team needs to be able to run the application both in local development environments and deploy to cloud platforms
+- **Implementation**: Use environment variable configuration that works for both local and cloud deployments; Dockerize for consistent deployment
+- **Alternatives considered**: Cloud-only deployment (limits local development), multiple codebases (increases maintenance overhead)
