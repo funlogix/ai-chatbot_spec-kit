@@ -8,7 +8,11 @@
       "models": ["o4-mini", "gpt-5"],
       "defaultModel": "o4-mini",
       "isActive": true,
-      "endpoint": "https://api.openai.com/v1"
+      "endpoint": "https://api.openai.com/v1",
+      "rateLimits": {
+        "windowMs": 60000,
+        "maxRequests": 100000
+      }
     },
     {
       "id": "groq",
@@ -18,7 +22,11 @@
       "models": ["openai/gpt-oss-120b", "qwen/qwen3-32b"],
       "defaultModel": "openai/gpt-oss-120b",
       "isActive": true,
-      "endpoint": "https://api.groq.com/openai/v1"
+      "endpoint": "https://api.groq.com/openai/v1",
+      "rateLimits": {
+        "windowMs": 60000,
+        "maxRequests": 30
+      }
     },
     {
       "id": "gemini",
@@ -28,7 +36,11 @@
       "models": ["gemini-2.5-flash", "gemini-2.5-pro"],
       "defaultModel": "gemini-2.5-flash",
       "isActive": true,
-      "endpoint": "https://generativelanguage.googleapis.com/v1beta"
+      "endpoint": "https://generativelanguage.googleapis.com/v1beta",
+      "rateLimits": {
+        "windowMs": 60000,
+        "maxRequests": 10
+      }
     },
     {
       "id": "openrouter",
@@ -38,7 +50,11 @@
       "models": ["z-ai/glm-4.5-air:free", "x-ai/grok-4.1-fast:free"],
       "defaultModel": "z-ai/glm-4.5-air:free",
       "isActive": true,
-      "endpoint": "https://openrouter.ai/api/v1"
+      "endpoint": "https://openrouter.ai/api/v1",
+      "rateLimits": {
+        "windowMs": 60000,
+        "maxRequests": 20
+      }
     }
   ],
   "defaultModels": {
@@ -46,5 +62,9 @@
     "groq": "openai/gpt-oss-120b",
     "gemini": "gemini-2.5-flash",
     "openrouter": "z-ai/glm-4.5-air:free"
+  },
+  "defaultRateLimits": {
+    "windowMs": 60000,
+    "maxRequests": 60
   }
 }

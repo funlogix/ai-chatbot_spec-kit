@@ -6,20 +6,19 @@ let rateLimitStorage = new Map();
 
 class RateLimitMiddleware {
   constructor() {
-    // Default rate limits per provider (can be configured per provider)
-    this.defaultLimits = {
-      windowMs: 60 * 1000, // 1 minute
-      maxRequests: 60,     // max requests per window
-      apiKey: null         // specific key to track (IP, user ID, etc.)
-    };
-    
-    // Provider-specific limits (these would come from config in production)
-    this.providerLimits = {
-      openai: { windowMs: 60 * 1000, maxRequests: 3000 },   // 3000 requests per minute
-      groq: { windowMs: 60 * 1000, maxRequests: 30 },       // 30 requests per minute (free tier)
-      gemini: { windowMs: 60 * 1000, maxRequests: 600 },    // 600 requests per minute
-      openrouter: { windowMs: 60 * 1000, maxRequests: 100 } // 100 requests per minute
-    };
+    // Load configuration
+    const providersConfig = require('../config/providers.json');
+
+    // Default rate limits per provider (loaded from config)
+    this.defaultLimits = providersConfig.defaultRateLimits;
+
+    // Provider-specific limits (loaded from config)
+    this.providerLimits = {};
+    providersConfig.providers.forEach(provider => {
+      if (provider.rateLimits) {
+        this.providerLimits[provider.id] = provider.rateLimits;
+      }
+    });
   }
 
   // Generic rate limiter middleware
