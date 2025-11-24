@@ -16,45 +16,9 @@ const ProviderController = {
   // Get all available providers
   async getAvailableProviders(req, res) {
     try {
-      // Define the supported providers with their basic information
-      const providers = [
-        {
-          id: 'openai',
-          name: 'OpenAI',
-          description: 'OpenAI provides o4-mini, GPT-5 and other advanced language models',
-          dataPrivacyUrl: 'https://openai.com/policies/privacy-policy',
-          models: ['o4-mini', 'gpt-5'],
-          defaultModel: 'o4-mini',
-          isActive: true
-        },
-        {
-          id: 'groq',
-          name: 'Groq',
-          description: 'Groq provides fast inference for GPT-OSS, Qwen and other high-speed models',
-          dataPrivacyUrl: 'https://www.groq.com/privacy-policy',
-          models: ['openai/gpt-oss-120b', 'qwen/qwen3-32b'],
-          defaultModel: 'openai/gpt-oss-120b',
-          isActive: true
-        },
-        {
-          id: 'gemini',
-          name: 'Google Gemini',
-          description: 'Google\'s Gemini provides advanced multimodal AI capabilities',
-          dataPrivacyUrl: 'https://policies.google.com/privacy',
-          models: ['gemini-2.5-flash', 'gemini-2.5-pro'],
-          defaultModel: 'gemini-2.5-flash',
-          isActive: true
-        },
-        {
-          id: 'openrouter',
-          name: 'OpenRouter',
-          description: 'OpenRouter provides access to various open-source and commercial models',
-          dataPrivacyUrl: 'https://openrouter.ai/privacy',
-          models: ['z-ai/glm-4.5-air:free', 'x-ai/grok-4.1-fast:free'],
-          defaultModel: 'z-ai/glm-4.5-air:free',
-          isActive: true
-        }
-      ];
+      // Load providers from configuration file
+      const providersConfig = require('../../config/providers.json');
+      const providers = providersConfig.providers;
 
       res.json({ providers });
     } catch (error) {

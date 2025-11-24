@@ -208,15 +208,9 @@ const ProxyController = {
 
       // If no model is specified or it's null, try to get the default model for this provider
       if (!requestData.data.model) {
-        // We need to get the default from the provider configuration
-        // Since we don't have direct access to the provider service in this function,
-        // we'll use the default models that are known
-        const defaultModels = {
-          'openai': 'o4-mini',
-          'groq': 'openai/gpt-oss-120b',
-          'gemini': 'gemini-2.5-flash',
-          'openrouter': 'z-ai/glm-4.5-air:free'
-        };
+        // Load default models from configuration file
+        const providersConfig = require('../../config/providers.json');
+        const defaultModels = providersConfig.defaultModels;
 
         requestData.data.model = defaultModels[providerId] || 'openai/gpt-oss-120b';
       }

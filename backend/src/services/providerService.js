@@ -14,44 +14,18 @@ class ProviderService {
 
   // Initialize default providers
   initializeDefaultProviders() {
-    const defaultProviders = [
-      {
-        id: 'openai',
-        name: 'OpenAI',
-        endpoint: process.env.OPENAI_API_BASE_URL || 'https://api.openai.com/v1',
-        config: {
-          models: ['o4-mini', 'gpt-5'],
-          defaultModel: 'o4-mini'
-        }
-      },
-      {
-        id: 'groq',
-        name: 'Groq',
-        endpoint: process.env.GROQ_API_BASE_URL || 'https://api.groq.com/openai/v1',
-        config: {
-          models: ['openai/gpt-oss-120b', 'qwen/qwen3-32b'],
-          defaultModel: 'openai/gpt-oss-120b'
-        }
-      },
-      {
-        id: 'gemini',
-        name: 'Google Gemini',
-        endpoint: process.env.GEMINI_API_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta',
-        config: {
-          models: ['gemini-2.5-flash', 'gemini-2.5-pro'],
-          defaultModel: 'gemini-2.5-flash'
-        }
-      },
-      {
-        id: 'openrouter',
-        name: 'OpenRouter',
-        endpoint: process.env.OPENROUTER_API_BASE_URL || 'https://openrouter.ai/api/v1',
-        config: {
-          models: ['z-ai/glm-4.5-air:free', 'x-ai/grok-4.1-fast:free'],
-          defaultModel: 'z-ai/glm-4.5-air:free'
-        }
+    // Load providers from configuration file
+    const providersConfig = require('../../config/providers.json');
+
+    const defaultProviders = providersConfig.providers.map(provider => ({
+      id: provider.id,
+      name: provider.name,
+      endpoint: process.env[`${provider.id.toUpperCase()}_API_BASE_URL`] || provider.endpoint,
+      config: {
+        models: provider.models,
+        defaultModel: provider.defaultModel
       }
-    ];
+    }));
 
     defaultProviders.forEach(provider => {
       const id = crypto.randomUUID();
@@ -63,7 +37,7 @@ class ProviderService {
         config: provider.config,
         isActive: true
       });
-      
+
       providers.set(providerConfig.id, providerConfig);
     });
   }
