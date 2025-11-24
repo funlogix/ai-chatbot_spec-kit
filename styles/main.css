@@ -1,76 +1,110 @@
-/* Main stylesheet with responsive design */
+/* 
+ * Main application styles
+ * Global styles and layout for the AI Chatbot application
+ */
 
 :root {
-  --primary-color: #4a6fa5;
-  --secondary-color: #6b8cbc;
-  --background-color: #f5f7fa;
-  --user-message-bg: #e3f2fd;
-  --bot-message-bg: #ffffff;
-  --border-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --text-color: #333333;
-  --text-light: #666666;
-  --success-color: #4caf50;
-  --error-color: #f44336;
-  --warning-color: #ff9800;
+  --primary-color: #4a6cf7;
+  --primary-dark: #3a5ae0;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --light-bg: #f8f9fa;
+  --dark-bg: #343a40;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --card-bg: #ffffff;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
 }
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
   line-height: 1.6;
-  min-height: 100vh;
+  color: var(--text-primary);
+  background-color: var(--light-bg);
+}
+
+.app-header {
+  background-color: var(--card-bg);
+  padding: 1rem;
+  box-shadow: var(--shadow);
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-header {
-  text-align: center;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 20px;
-}
-
-header h1 {
+.app-header h1 {
   color: var(--primary-color);
-  font-size: 2.5rem;
+  font-size: 1.5rem;
 }
 
-main {
-  flex: 1;
+.main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Provider and model selector styles */
+.provider-selector, .model-selector {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+}
+
+.provider-selector label, .model-selector label {
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.provider-selector select, .model-selector select {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+/* Configuration panel styles */
+#configuration-panel {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+#configuration-panel h2 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .container {
-    padding: 10px;
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
   }
   
-  header h1 {
-    font-size: 2rem;
+  .app-header h1 {
+    text-align: center;
   }
-}
-
-@media (max-width: 480px) {
-  header h1 {
-    font-size: 1.5rem;
+  
+  .main-content {
+    margin: 1rem auto;
   }
 }

@@ -58,3 +58,7 @@ coverage/
 # Temporary files
 *.tmp
 *.temp
+
+# Configuration and chat files containing API keys
+chat.json
+config.json
