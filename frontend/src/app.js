@@ -63,6 +63,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentProviderId = providerId;
         if (modelId) {
           currentModelId = modelId;  // Use the default model provided by the backend
+        } else if (!providerId) {
+          // If provider is null, also reset the model to null
+          currentModelId = null;
         } else {
           // If no default model was provided (which shouldn't happen if the backend is working correctly),
           // we should still update the model to null or keep existing one
@@ -70,24 +73,63 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         console.log(`Current provider updated to: ${currentProviderId}, model: ${currentModelId}`);
 
-        // After provider changes, ensure the model selector loads the correct models
-        if (window.modelSelector && providerId) {
-          setTimeout(async () => {
-            try {
-              await window.modelSelector.loadModelsForProvider(providerId);
-              // If we have a default model from the API call above, select it in the dropdown
-              if (modelId) {
-                window.modelSelector.selectModel(modelId);
-                // Also update the global state to ensure consistency
-                currentModelId = modelId;
+        // After provider changes, ensure the model selector loads the correct models or resets
+        if (window.modelSelector) {
+          if (providerId) {
+            // If a provider is selected, load its models
+            setTimeout(async () => {
+              try {
+                await window.modelSelector.loadModelsForProvider(providerId);
+                // If we have a default model from the API call above, select it in the dropdown
+                if (modelId) {
+                  window.modelSelector.selectModel(modelId);
+                  // Also update the global state to ensure consistency
+                  currentModelId = modelId;
+                }
+              } catch (loadError) {
+                console.error(`Error loading models for provider ${providerId}:`, loadError);
               }
-            } catch (loadError) {
-              console.error(`Error loading models for provider ${providerId}:`, loadError);
-            }
-          }, 100); // Small delay to ensure UI updates
+            }, 100); // Small delay to ensure UI updates
+          } else {
+            // If no provider is selected, clear the model selector completely
+            window.modelSelector.models = []; // Clear the models
+            window.modelSelector.selectedProviderId = null; // Clear the selected provider
+            window.modelSelector.selectedModelId = null; // Clear the selected model
+            window.modelSelector.selectModel(null); // Reset model selection
+            window.modelSelector.render(); // Re-render with no models
+          }
         }
+
+        // Update any UI elements that show current provider/model info
+        updateProviderModelDisplay(providerId, currentModelId);
       }
     });
+
+    // Function to update UI elements showing provider/model info
+    function updateProviderModelDisplay(providerId, modelId) {
+      // Update any UI element that displays the current provider/model
+      // This could be in the header, chat interface, or elsewhere
+      const providerDisplay = document.querySelector('#current-provider-display');
+      const modelDisplay = document.querySelector('#current-model-display');
+
+      if (providerDisplay) {
+        if (providerId) {
+          providerDisplay.textContent = `Current Provider: ${providerId}`;
+          providerDisplay.style.display = 'inline'; // Show the element
+        } else {
+          providerDisplay.style.display = 'none'; // Hide when no provider selected
+        }
+      }
+
+      if (modelDisplay) {
+        if (modelId) {
+          modelDisplay.textContent = `Current Model: ${modelId}`;
+          modelDisplay.style.display = 'inline'; // Show the element
+        } else {
+          modelDisplay.style.display = 'none'; // Hide when no model selected
+        }
+      }
+    }
 
     // Initialize model selector component
     const modelSelector = new ModelSelector('model-selector-container', {
@@ -113,6 +155,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Use the global state variables for provider and model
         const providerId = currentProviderId || 'groq';
         const modelId = currentModelId || 'openai/gpt-oss-120b';
+
+        // Check if a provider is properly selected
+        if (!currentProviderId) {
+          throw new Error('No provider selected. Please select a provider before sending a message.');
+        }
 
         console.log('Sending message:', message, 'to provider:', providerId, 'with model:', modelId);
 

@@ -241,13 +241,12 @@ class ChatInterface {
   // Method to set the current provider (called when provider changes)
   setCurrentProvider(providerId, modelId) {
     this.currentProviderId = providerId;
-    if (modelId) {
-      this.currentModelId = modelId;
-    }
+    // Update the model ID, allowing it to be null if provider is null
+    this.currentModelId = (providerId ? modelId : null);
 
     // Optionally, notify if needed
     if (this.options.onProviderChange) {
-      this.options.onProviderChange(providerId, modelId);
+      this.options.onProviderChange(providerId, this.currentModelId);
     }
   }
 

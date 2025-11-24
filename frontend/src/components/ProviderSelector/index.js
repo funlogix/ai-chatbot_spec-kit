@@ -65,6 +65,13 @@ class ProviderSelector {
     const label = document.createElement('label');
     label.textContent = 'Select AI Provider:';
     label.setAttribute('for', 'provider-select');
+    // Apply consistent styling to match Model selector
+    label.style.fontWeight = 'bold';
+    label.style.color = 'var(--text-primary)';
+    label.style.fontSize = '1rem';
+    label.style.marginBottom = '0.25rem';
+    label.style.textAlign = 'left';
+    label.style.display = 'block';
 
     // Create the provider selection element based on display type
     let providerElement;
@@ -96,13 +103,31 @@ class ProviderSelector {
     const select = document.createElement('select');
     select.id = 'provider-select';
     select.className = 'provider-select';
-    
+
+    // Apply consistent styling to match Model selector
+    select.style.width = '100%';
+    select.style.padding = '0.5rem';
+    select.style.fontSize = '1rem';
+    select.style.fontWeight = 'normal';
+    select.style.lineHeight = '1.5';
+    select.style.color = 'var(--text-primary)';
+    select.style.backgroundColor = 'var(--card-bg)';
+    select.style.backgroundClip = 'padding-box';
+    select.style.border = '1px solid var(--border-color)';
+    select.style.borderRadius = 'var(--border-radius)';
+    select.style.webkitAppearance = 'none';
+    select.style.mozAppearance = 'none';
+    select.style.appearance = 'none';
+    select.style.transition = 'border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out';
+    select.style.minHeight = 'calc(1.5em + 1rem + 2px)';
+    select.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+
     // Add default option
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
     defaultOption.textContent = 'Choose a provider...';
     select.appendChild(defaultOption);
-    
+
     // Add options for each provider
     this.providers.forEach(provider => {
       const option = document.createElement('option');
@@ -113,7 +138,7 @@ class ProviderSelector {
       }
       select.appendChild(option);
     });
-    
+
     return select;
   }
 
@@ -196,12 +221,16 @@ class ProviderSelector {
 
     // Check if providerId is valid (not empty/null/default option)
     if (!providerId) {
-      // If user selects the default option or a blank value, don't proceed with selection
-      console.log('No provider selected, ignoring selection');
-      // Just update the current provider to null or keep the previous selection
+      // If user selects the default option or a blank value, reset both provider and model
+      console.log('Resetting to no provider selected');
+      // Update the global state to clear both provider and model
       if (this.options.onProviderChange) {
         await this.options.onProviderChange(null, null);
       }
+      // Reset the current model ID in this component
+      this.selectedModelId = null;
+      // Reset the privacy info display
+      this.hidePrivacyInfo();
       return; // Don't execute the rest of the function
     }
 

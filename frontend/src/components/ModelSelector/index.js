@@ -73,7 +73,7 @@ class ModelSelector {
       modelElement = this.createDropdownSelection();
     }
 
-    // Add a note about the selected provider
+    // Add a note about the selected provider (only if a provider is selected)
     if (this.selectedProviderId) {
       const providerNote = document.createElement('div');
       providerNote.style.fontSize = '0.8em';
@@ -272,9 +272,13 @@ class ModelSelector {
     if (this.options.displayType === 'dropdown') {
       const select = this.container.querySelector('#model-select');
       if (select) {
-        select.value = modelId;
-        // Trigger change event
-        select.dispatchEvent(new Event('change'));
+        if (modelId) {
+          select.value = modelId;
+          // Trigger change event
+          select.dispatchEvent(new Event('change'));
+        } else {
+          select.value = ''; // Reset to default option if null
+        }
       }
     } else {
       const radio = this.container.querySelector(`input[value="${modelId}"]`);
