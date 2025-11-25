@@ -3,40 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot with Text and Voice Interactions</title>
+    <title>AI Chatbot - Multi-Provider Support</title>
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/chat.css">
-    <link rel="stylesheet" href="styles/animations.css">
+    <link rel="stylesheet" href="styles/chat-interface.css">
+    <link rel="stylesheet" href="styles/providerSelector.css">
+    <link rel="stylesheet" href="styles/modelSelector.css">
 </head>
 <body>
-    <div class="container">
-        <header>
+    <div id="app">
+        <!-- Header with provider selection -->
+        <header class="app-header">
             <h1>AI Chatbot</h1>
+            <div id="provider-selector-container">
+                <!-- ProviderSelector component will be mounted here -->
+            </div>
+            <div id="model-selector-container">
+                <!-- ModelSelector component will be mounted here -->
+            </div>
         </header>
-        
-        <main>
-            <div id="chat-container">
-                <div id="chat-history"></div>
-                <div id="input-area">
-                    <button id="voice-input-btn" title="Voice Input">🎤</button>
-                    <input type="text" id="message-input" placeholder="Type your message here..." aria-label="Type your message">
-                    <button id="send-btn" title="Send Message">➤</button>
-                    <button id="voice-output-btn" title="Toggle Voice Output">🔊</button>
-                </div>
+
+        <!-- Main content area -->
+        <main class="main-content">
+            <div id="chat-interface-container">
+                <!-- ChatInterface component will be mounted here -->
+            </div>
+
+            <!-- Voice Controls (Hidden when components are loaded via modules) -->
+            <div class="voice-controls" style="display: none;">
+                <button id="voice-input-btn" title="Voice Input" aria-label="Voice Input">🎤</button>
+                <button id="voice-output-btn" title="Voice Output" aria-label="Voice Output">🔊</button>
             </div>
         </main>
+
+        <!-- Configuration panel (only visible to developers/administrators) -->
+        <div id="configuration-panel" style="display: none;">
+            <h2>Configuration Panel</h2>
+            <div id="provider-configuration-container">
+                <!-- ProviderConfiguration component will be mounted here -->
+            </div>
+            <div id="task-assignment-container">
+                <!-- ProviderTaskAssignment component will be mounted here -->
+            </div>
+        </div>
     </div>
 
+    <!-- Include the required scripts -->
     <script src="scripts/config.js"></script>
-    <script src="scripts/entities/conversation.js"></script>
+    <script src="scripts/utils.js"></script>
     <script src="scripts/entities/message.js"></script>
     <script src="scripts/entities/user-input.js"></script>
     <script src="scripts/services/conversation-service.js"></script>
-    <script src="scripts/utils.js"></script>
     <script src="scripts/api-client.js"></script>
     <script src="scripts/chat.js"></script>
-    <script src="scripts/voice-input.js"></script>
-    <script src="scripts/voice-output.js"></script>
-    <script src="scripts/main.js"></script>
+
+    <!-- Scripts -->
+    <script type="module" src="frontend/src/app.js"></script>
 </body>
 </html>

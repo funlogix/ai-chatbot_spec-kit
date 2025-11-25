@@ -1,76 +1,177 @@
-/* Main stylesheet with responsive design */
+/* 
+ * Main application styles
+ * Global styles and layout for the AI Chatbot application
+ */
 
 :root {
-  --primary-color: #4a6fa5;
-  --secondary-color: #6b8cbc;
-  --background-color: #f5f7fa;
-  --user-message-bg: #e3f2fd;
-  --bot-message-bg: #ffffff;
-  --border-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --text-color: #333333;
-  --text-light: #666666;
-  --success-color: #4caf50;
-  --error-color: #f44336;
-  --warning-color: #ff9800;
+  --primary-color: #4a6cf7;
+  --primary-dark: #3a5ae0;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --light-bg: #f8f9fa;
+  --dark-bg: #343a40;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --card-bg: #ffffff;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
 }
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
   line-height: 1.6;
-  min-height: 100vh;
+  color: var(--text-primary);
+  background-color: var(--light-bg);
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between; /* Distribute space between title and controls */
+  align-items: flex-start; /* Changed from center to allow for multi-line content */
+  flex-wrap: wrap;
+  gap: 1rem;
+  max-width: 1200px; /* Match main content width */
+  margin: 0 auto; /* Center the header */
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+
+/* Style provider and model selectors to align to the right within their container */
+#provider-selector-container, #model-selector-container {
   display: flex;
   flex-direction: column;
+  min-width: 200px;
+  align-self: flex-end; /* Align to bottom/right of header */
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  height: 100vh;
+/* Provider and model selector styling */
+.provider-selector, .model-selector {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
-header {
-  text-align: center;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 20px;
+.provider-selector label, .model-selector label {
+  font-weight: bold !important;
+  color: var(--text-primary) !important;
+  font-size: 1rem !important; /* Unify font size */
+  margin-bottom: 0.25rem !important; /* Consistent spacing */
+  text-align: left !important; /* Left align the labels */
+  align-self: flex-start !important; /* Align to the left */
 }
 
-header h1 {
+.provider-selector select, .model-selector select {
+  padding: 0.5rem !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--border-radius) !important;
+  background-color: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+  font-size: 1rem !important; /* Unify font size */
+  font-weight: normal !important; /* Normalize font weight */
+  min-height: calc(1.5em + 1rem + 2px) !important; /* Consistent height */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; /* Unify font family */
+}
+
+/* Ensure elements stay in proper positions at all screen sizes */
+.app-header h1 {
   color: var(--primary-color);
-  font-size: 2.5rem;
+  font-size: 1.5rem;
+  margin: 0;
+  flex: 0 0 auto; /* Don't grow or shrink */
 }
 
-main {
-  flex: 1;
+#provider-selector-container,
+#model-selector-container {
+  flex: 0 1 200px; /* Allow to grow but start at 200px */
+  min-width: 200px;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Provider and model selector styles */
+.provider-selector, .model-selector {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+  min-width: 200px; /* Consistent minimum width */
+}
+
+/* Ensure header elements maintain proper position */
+#provider-selector-container,
+#model-selector-container {
+  min-width: 200px; /* Consistent minimum width */
+  flex: 0 1 auto; /* Allow to grow if needed, but don't shrink below min-width */
+}
+
+/* Privacy information container styling */
+#provider-privacy-info {
+  width: 100%; /* Full width to stay under the controls */
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.provider-selector label, .model-selector label {
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.provider-selector select, .model-selector select {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+/* Configuration panel styles */
+#configuration-panel {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+#configuration-panel h2 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .container {
-    padding: 10px;
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
   }
   
-  header h1 {
-    font-size: 2rem;
+  .app-header h1 {
+    text-align: center;
   }
-}
-
-@media (max-width: 480px) {
-  header h1 {
-    font-size: 1.5rem;
+  
+  .main-content {
+    margin: 1rem auto;
   }
 }

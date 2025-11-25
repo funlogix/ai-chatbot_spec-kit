@@ -1,0 +1,93 @@
+/* frontend/styles/components/providerSelector.css */
+
+/* Provider Selector Component Styles */
+.provider-selector-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;  /* Ensure consistent minimum width */
+  position: static;  /* Keep in document flow to prevent jumps */
+  margin-bottom: 1rem; /* Consistent spacing */
+  width: auto; /* Ensure width doesn't expand unexpectedly */
+  max-width: 100%; /* Prevent overflow */
+}
+
+.provider-selector label {
+  display: block !important;
+  margin-bottom: 0.5rem !important;
+  font-weight: bold !important; /* Make consistent with main styles */
+  font-size: 1rem !important; /* Unify font size */
+  text-align: left !important; /* Left align */
+}
+
+.provider-selector select {
+  width: 100% !important;
+  padding: 0.5rem !important; /* Use same as main styles */
+  font-size: 1rem !important; /* Unify font size */
+  font-weight: normal !important; /* Normalize font weight */
+  line-height: 1.5 !important;
+  color: var(--text-primary) !important; /* Use CSS variable */
+  background-color: var(--card-bg) !important; /* Use CSS variable */
+  background-clip: padding-box !important;
+  border: 1px solid var(--border-color) !important; /* Use CSS variable */
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  border-radius: var(--border-radius) !important; /* Use CSS variable */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+  min-height: calc(1.5em + 1rem + 2px) !important; /* Use same calculation as main styles */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; /* Unify font family */
+}
+
+/* Maintain consistent sizing for error messages */
+.error-message {
+  display: none; /* Hidden by default */
+  color: #dc3545;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #dc3545;
+  border-radius: 4px;
+  background-color: #f8d7da;
+  position: static; /* Prevents from moving around */
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.error-message.show {
+  display: block;
+}
+
+/* Animation for error messages */
+@keyframes fadeIn {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 100px; }
+}
+
+/* Privacy info container */
+#provider-privacy-info {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  position: static; /* Keeps it in document flow */
+}
+
+/* Prevent layout shifts by maintaining consistent heights */
+.provider-selector-wrapper,
+.model-selector-wrapper {
+  min-height: 80px; /* Minimum height to prevent jumps when content changes */
+}
+
+/* Radio button styling */
+.provider-radios,
+.model-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Consistent styling for component containers */
+#provider-selector-container,
+#model-selector-container {
+  min-height: 100px; /* Maintain consistent height */
+  position: relative; /* Ensure child elements stay positioned properly */
+}
