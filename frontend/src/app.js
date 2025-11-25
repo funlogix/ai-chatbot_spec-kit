@@ -206,7 +206,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Store components globally for debugging purposes
     window.providerSelector = providerSelector;
     window.modelSelector = modelSelector;
-    window.chatInterface = chatInterface;
+    window.chatInterface = chatInterface;  // Set only once
+
+    // Voice functionality is now integrated directly in the ChatInterface component
+    // No separate initialization needed as it's handled within the component itself
+    console.log('Voice functionality integrated directly in ChatInterface component');
 
     console.log('AI Chatbot App initialized successfully with multi-provider support!');
   } catch (error) {

@@ -63,6 +63,32 @@ This document outlines the implementation tasks for the multi-provider API suppo
 
 ---
 
+## Phase 11: Voice Functionality Rebuild
+**Goal**: Rebuild voice functionality directly in ChatInterface component to replace legacy voice components
+
+- [x] T101 [P] Assess and document current voice functionality in legacy files for feature parity analysis
+- [x] T102 [P] Identify voice-related files that can be removed after migration to new implementation
+- [x] T103 Implement speech recognition functionality directly in ChatInterface component
+- [x] T104 Implement microphone button with proper visual state feedback (active/listening/idle)
+- [x] T105 Add proper state management for speech recognition to prevent multiple simultaneous starts
+- [x] T106 Add error handling for microphone access and speech recognition failures
+- [x] T107 Implement text-to-speech functionality for bot responses in ChatInterface
+- [x] T108 Implement visual feedback for recording state (button changes, pulse animation)
+- [x] T109 Ensure button properly reflects listening/recording state with appropriate UI changes
+- [x] T110 Add visual indicators when voice output is active
+- [x] T111 Ensure transcribed text appears in message input and as user message in chat history
+- [x] T112 Play assistant responses using text-to-speech with proper synchronization
+- [x] T113 Integrate new voice functionality with provider/model selection system
+- [x] T114 Test voice functionality across all configured providers (OpenAI, Groq, Gemini, OpenRouter)
+- [x] T115 Create unit tests for voice functionality in ChatInterface component
+- [x] T116 Create integration tests for voice functionality with provider switching
+- [x] T117 Test error handling for voice functionality (permissions, browser support, etc.)
+- [x] T118 Update documentation and quickstart guide to reflect new voice implementation
+- [x] T119 Conduct final end-to-end testing of voice functionality with all providers
+- [x] T120 Compile list of legacy voice files to be removed after successful implementation
+
+---
+
 ## Phase 4: User Story 2 - Secure API Key Management (P1)
 **Goal**: Enable developers to configure API keys for different providers without hardcoding them in JavaScript files
 **Independent Test**: Can be tested by verifying that no API keys are present in JavaScript files that get deployed to the client, and that the system functions with keys stored securely on the server

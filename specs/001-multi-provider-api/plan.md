@@ -9,6 +9,32 @@
 
 This implementation plan details the development of a multi-provider API support feature for the AI chatbot. The primary requirement is to enable users to switch between different AI service providers (OpenAI, Groq, Gemini, OpenRouter) with different models, while maintaining security and rate limiting. The technical approach involves creating a modular provider system that includes both frontend and backend components. The frontend uses plain JavaScript, HTML, and CSS that complies with the project's constitution of avoiding frameworks, while a backend service securely manages API keys and proxies requests to AI providers. The solution includes secure API key management, rate limiting per provider specifications, user preference storage, and role-based access controls for administrators.
 
+The plan has been updated to include voice functionality directly integrated into the ChatInterface component, replacing the separate legacy voice components with a unified approach that better fits the component-based architecture.
+
+## Voice Functionality Architecture Decision
+
+After evaluating the original architecture that used separate voice components (voice-input.js and voice-output.js), we decided to implement voice functionality directly in the ChatInterface component for the following reasons:
+
+### Problem with Original Approach
+- State management conflicts between legacy components and new component architecture
+- UI layout shifts and improper visual feedback
+- Duplicate functionality and event handling
+- Difficulty in synchronizing component states
+
+### Solution Implemented
+1. **Integrated Voice Engine**: Speech recognition and synthesis implemented directly in ChatInterface
+2. **Unified State Management**: Single source of truth for voice functionality within the component
+3. **Direct UI Control**: Visual feedback for recording/listening states managed entirely within component
+4. **Simplified Architecture**: Removal of separate voice components that conflicted with component-based design
+
+### Key Improvements
+- Better UI/UX with proper button state visualization (recording/paused)
+- Elimination of state synchronization issues
+- Direct text-to-speech for bot responses when enabled
+- Proper error handling for microphone permissions and browser support
+- Seamless integration with provider/model selection system
+- Transcribed text automatically appears in chat history
+
 ## Technical Context
 
 **Language/Version**: JavaScript ES2020+ (as specified in QWEN.md)

@@ -27,6 +27,12 @@
             <div id="chat-interface-container">
                 <!-- ChatInterface component will be mounted here -->
             </div>
+
+            <!-- Voice Controls (Hidden when components are loaded via modules) -->
+            <div class="voice-controls" style="display: none;">
+                <button id="voice-input-btn" title="Voice Input" aria-label="Voice Input">🎤</button>
+                <button id="voice-output-btn" title="Voice Output" aria-label="Voice Output">🔊</button>
+            </div>
         </main>
 
         <!-- Configuration panel (only visible to developers/administrators) -->
@@ -40,6 +46,15 @@
             </div>
         </div>
     </div>
+
+    <!-- Include the required scripts -->
+    <script src="scripts/config.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/entities/message.js"></script>
+    <script src="scripts/entities/user-input.js"></script>
+    <script src="scripts/services/conversation-service.js"></script>
+    <script src="scripts/api-client.js"></script>
+    <script src="scripts/chat.js"></script>
 
     <!-- Scripts -->
     <script type="module" src="frontend/src/app.js"></script>
