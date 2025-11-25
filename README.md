@@ -1,12 +1,14 @@
-# AI Chatbot with Text and Voice Interactions
+# AI Chatbot with Multi-Provider Support and Voice Interactions
 
-A web-based AI chatbot that supports both text and voice interactions using Groq API for chat processing and browser Web Speech APIs for voice input and output.
+A web-based AI chatbot that supports both text and voice interactions with multiple AI providers (OpenAI, Groq, Google Gemini, OpenRouter) and browser Web Speech APIs for voice input and output.
 
 ## Features
 
 - **Text Chat**: Type messages and receive text responses from an AI assistant
 - **Voice Input**: Speak to the chatbot using your microphone; speech is converted to text
 - **Voice Output**: Listen to AI responses using text-to-speech functionality
+- **Multi-Provider Support**: Switch between OpenAI, Groq, Google Gemini, and OpenRouter
+- **Model Selection**: Choose from different models for each provider
 - **Privacy Focused**: All conversation data is processed in real-time with no storage
 - **Accessible**: WCAG 2.1 AA compliant interface
 
@@ -64,19 +66,20 @@ A web-based AI chatbot that supports both text and voice interactions using Groq
 
 ## API Limits
 
-This application uses Groq's free tier which has the following limits:
-- 30 Requests per minute
-- 1,000 Requests per day
-- 8,000 Tokens per minute
-- 200,000 Tokens per day
+The application handles rate limits per provider as configured in the backend:
+- **OpenAI**: API rate limits based on your subscription tier
+- **Groq**: Rate limits vary by model and user tier (free tier: 30 requests per minute)
+- **Google Gemini**: Rate limits according to your Google Cloud billing plan
+- **OpenRouter**: Rate limits vary by model (free models: typically 20 requests per minute)
 
 ## Architecture
 
-The application uses a client-side only architecture with:
-- Plain HTML, CSS, and JavaScript (no frameworks)
-- Groq API for AI chat functionality
-- Browser Web Speech API for voice processing
-- Client-side state management for conversations
+The application uses a full-stack architecture with:
+- Frontend: Plain HTML, CSS, and JavaScript (no frameworks)
+- Backend: Node.js/Express server that acts as a secure proxy to AI provider APIs
+- Web Speech API for voice processing in the browser
+- Secure API key management in backend environment variables
+- Client-side state management for UI components and conversations
 
 ## Testing
 
@@ -116,7 +119,7 @@ The AI Chatbot now supports switching between multiple AI providers, allowing us
 
 ### Supported Providers
 
-- **OpenAI**: GPT-4, GPT-3.5 and other models
-- **Groq**: Llama 3, Mixtral and other high-speed models
-- **Gemini**: Gemini Pro, Gemini Flash and other Google models
-- **OpenRouter**: Various open-source and commercial models
+- **OpenAI**: o4-mini, GPT-5 and other advanced models
+- **Groq**: openai/gpt-oss-120b, qwen/qwen3-32b and other high-speed models
+- **Google Gemini**: gemini-2.5-flash, gemini-2.5-pro and other multimodal models
+- **OpenRouter**: z-ai/glm-4.5-air:free, x-ai/grok-4.1-fast:free and various open-source models
